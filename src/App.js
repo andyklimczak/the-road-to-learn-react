@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Search from './Search.js';
+import Table from './Table.js';
 
 const list = [
   {
@@ -19,7 +21,6 @@ const list = [
     objectId: 1,
   },
 ];
-const isSearched = (query) => (item) => !query || item.title.toLowerCase().indexOf(query.toLowerCase()) !== -1;
 
 class App extends Component {
   constructor(props) {
@@ -37,19 +38,10 @@ class App extends Component {
     const { query, list } = this.state;
     return (
       <div className="App">
-        <form>
-          <input type="text" value={query} onChange={this.onSearchChange} />
-        </form>
-        { list.filter(isSearched(query)).map(item => {
-          return (
-            <div key={item.objectId}>
-              <span><a href={item.url}>{item.title}</a></span>
-              <span>{item.author}</span>
-              <span>{item.num_comments}</span>
-              <span>{item.points}</span>
-            </div>
-          );
-        })}
+        <Search value={query} onChange={this.onSearchChange} >
+          Search
+        </Search>
+        <Table list={list} pattern={query} />
       </div>
     );
   }
