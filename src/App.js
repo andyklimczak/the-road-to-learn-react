@@ -19,6 +19,12 @@ class App extends Component {
     this.setSearchTopstories = this.setSearchTopstories.bind(this);
     this.fetchSearchTopstories = this.fetchSearchTopstories.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
+    this.onSearchSubmit = this.onSearchSubmit.bind(this);
+  }
+  onSearchSubmit(event) {
+    const { query } = this.state;
+    this.fetchSearchTopstories(query);
+    event.preventDefault();
   }
   onSearchChange(event) {
     this.setState({query: event.target.value});
@@ -40,11 +46,11 @@ class App extends Component {
     return (
       <div className="page">
         <div className="interactions">
-          <Search value={query} onChange={this.onSearchChange} >
+          <Search value={query} onChange={this.onSearchChange} onSubmit={this.onSearchSubmit}>
             Search
           </Search>
         </div>
-        { result ? <Table list={result.hits} pattern={query} /> : null }
+        { result && <Table list={result.hits} /> }
       </div>
     );
   }
