@@ -37,10 +37,12 @@ class App extends Component {
   render() {
     const { query, list } = this.state;
     return (
-      <div className="App">
-        <Search value={query} onChange={this.onSearchChange} >
-          Search
-        </Search>
+      <div className="page">
+        <div className="interactions">
+          <Search value={query} onChange={this.onSearchChange} >
+            Search
+          </Search>
+        </div>
         <Table list={list} pattern={query} />
       </div>
     );
