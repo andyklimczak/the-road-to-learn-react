@@ -4,9 +4,9 @@ import './App.css';
 
 const Table = ({list}) =>
   <div className="table">
-    { list.map(item => {
+    { list.map((item, key) => {
       return (
-        <div key={item.objectId} className="table-row">
+        <div key={key} className="table-row">
           <span style={{ width: '40%' }}><a href={item.url}>{item.title}</a></span>
           <span style={{ width: '30%' }}>{item.author}</span>
           <span style={{ width: '15%' }}>{item.num_comments}</span>

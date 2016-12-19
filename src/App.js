@@ -3,11 +3,16 @@ import logo from './logo.svg';
 import './App.css';
 import Search from './Search.js';
 import Table from './Table.js';
+import Button from './Button.js';
 
 const DEFAULT_QUERY = 'redux';
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
-const PARAM_SEARCH = 'query=?';
+const PARAM_SEARCH = 'query=';
+const DEFAULT_PAGE = 0;
+const PARAM_PAGE = 'page=';
+const DEFAULT_HPP = '100';
+const PARAM_HPP = 'hitsPerPage=';
 
 class App extends Component {
   constructor(props) {
@@ -23,26 +28,30 @@ class App extends Component {
   }
   onSearchSubmit(event) {
     const { query } = this.state;
-    this.fetchSearchTopstories(query);
+    this.fetchSearchTopstories(query, DEFAULT_PAGE);
     event.preventDefault();
   }
   onSearchChange(event) {
     this.setState({query: event.target.value});
   }
   setSearchTopstories(result) {
-    this.setState({result});
+    const { hits, page } = result;
+    const oldHits = page === 0 ? [] : this.state.result.hits;
+    const updatedHits = [...oldHits, ...hits];
+    this.setState({ result: { hits: updatedHits, page } });
   }
-  fetchSearchTopstories(query) {
-    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${query}`)
+  fetchSearchTopstories(query, page) {
+    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${query}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(response => response.json())
       .then(result => this.setSearchTopstories(result));
   }
   componentDidMount() {
     const { query, result } = this.state;
-    this.fetchSearchTopstories(query);
+    this.fetchSearchTopstories(query, DEFAULT_PAGE);
   }
   render() {
     const { query, result } = this.state;
+    const page = (result && result.page) || 0;
     return (
       <div className="page">
         <div className="interactions">
@@ -51,6 +60,9 @@ class App extends Component {
           </Search>
         </div>
         { result && <Table list={result.hits} /> }
+        <Button onClick={() => this.fetchSearchTopstories(query, page + 1)}>
+          More
+        </Button>
       </div>
     );
   }
