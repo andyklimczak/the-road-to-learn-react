@@ -5,6 +5,7 @@ import Search from './Search.js';
 import Table from './Table.js';
 import Button from './Button.js';
 import Loading from './Loading.js';
+import ButtonWithLoading from './ButtonWithLoading.js';
 
 const DEFAULT_QUERY = 'redux';
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
@@ -76,12 +77,12 @@ class App extends Component {
         </div>
         <Table list={list} />
         <div className="interactions">
-          { isLoading ?
-            <Loading /> :
-            <Button onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}>
-              More
-            </Button>
-          }
+          <ButtonWithLoading
+            isLoading={isLoading}
+            onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}
+          >
+            More
+          </ButtonWithLoading>
         </div>
       </div>
     );
