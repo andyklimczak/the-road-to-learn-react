@@ -4,6 +4,7 @@ import './App.css';
 import Search from './Search.js';
 import Table from './Table.js';
 import Button from './Button.js';
+import Loading from './Loading.js';
 
 const DEFAULT_QUERY = 'redux';
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
@@ -11,7 +12,7 @@ const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
 const DEFAULT_PAGE = 0;
 const PARAM_PAGE = 'page=';
-const DEFAULT_HPP = '100';
+const DEFAULT_HPP = '20';
 const PARAM_HPP = 'hitsPerPage=';
 
 class App extends Component {
@@ -21,6 +22,7 @@ class App extends Component {
       results: null,
       query: DEFAULT_QUERY,
       searchKey: '',
+      isLoading: false,
     };
     this.setSearchTopstories = this.setSearchTopstories.bind(this);
     this.fetchSearchTopstories = this.fetchSearchTopstories.bind(this);
@@ -48,9 +50,10 @@ class App extends Component {
     const { query } = this.state;
     const oldHits = page === 0 ? [] : this.state.results[searchKey].hits;
     const updatedHits = [...oldHits, ...hits];
-    this.setState({ results: { ...this.state.results, [searchKey]: { hits: updatedHits, page } } });
+    this.setState({ results: { ...this.state.results, [searchKey]: { hits: updatedHits, page } }, isLoading: false });
   }
   fetchSearchTopstories(query, page) {
+    this.setState({ isLoading: true });
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${query}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(response => response.json())
       .then(result => this.setSearchTopstories(result));
@@ -61,7 +64,7 @@ class App extends Component {
     this.fetchSearchTopstories(query, DEFAULT_PAGE);
   }
   render() {
-    const { query, results, searchKey } = this.state;
+    const { query, results, searchKey, isLoading } = this.state;
     const page = (results && results[searchKey] && results[searchKey].page) || 0;
     const list = (results && results[searchKey] && results[searchKey].hits) || [];
     return (
@@ -73,9 +76,12 @@ class App extends Component {
         </div>
         <Table list={list} />
         <div className="interactions">
-          <Button onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}>
-            More
-          </Button>
+          { isLoading ?
+            <Loading /> :
+            <Button onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}>
+              More
+            </Button>
+          }
         </div>
       </div>
     );
