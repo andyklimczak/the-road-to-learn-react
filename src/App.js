@@ -24,12 +24,19 @@ class App extends Component {
       query: DEFAULT_QUERY,
       searchKey: '',
       isLoading: false,
+      sortKey: 'NONE',
+      isSortReverse: false,
     };
     this.setSearchTopstories = this.setSearchTopstories.bind(this);
     this.fetchSearchTopstories = this.fetchSearchTopstories.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.needsToSearchTopstories = this.needsToSearchTopstories.bind(this);
+    this.onSort = this.onSort.bind(this);
+  }
+  onSort(sortKey) {
+    const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
+    this.setState({ sortKey, isSortReverse });
   }
   needsToSearchTopstories(query) {
     return !this.state.results[query];
@@ -65,7 +72,7 @@ class App extends Component {
     this.fetchSearchTopstories(query, DEFAULT_PAGE);
   }
   render() {
-    const { query, results, searchKey, isLoading } = this.state;
+    const { query, results, searchKey, isLoading, sortKey, isSortReverse } = this.state;
     const page = (results && results[searchKey] && results[searchKey].page) || 0;
     const list = (results && results[searchKey] && results[searchKey].hits) || [];
     return (
@@ -75,7 +82,7 @@ class App extends Component {
             Search
           </Search>
         </div>
-        <Table list={list} />
+        <Table list={list} sortKey={sortKey} onSort={this.onSort} isSortReverse={isSortReverse} />
         <div className="interactions">
           <ButtonWithLoading
             isLoading={isLoading}
